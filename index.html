@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Снимок инфоцентра помощников. Живые индикаторы работают только на Mac.">
+<title>Инфоцентр помощников</title>
+<style>
+
+:root{--bg:#090d18;--card:#121829;--card2:#161d31;--line:#232b45;--txt:#eef1ff;--mut:#8e9ac0;--grok:#8b5cf6;--gpt:#10b981;--cl:#f59e0b;--ok:#22c55e;--warn:#eab308;--bad:#ef4444;--acc:#a5b4fc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,sans-serif;color:var(--txt);background:var(--bg);min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(800px 500px at 15% 5%,rgba(139,92,246,.28),transparent 60%),radial-gradient(700px 450px at 90% 15%,rgba(16,185,129,.18),transparent 60%),radial-gradient(600px 400px at 60% 100%,rgba(245,158,11,.10),transparent 60%);animation:drift 30s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(3%,-2%) scale(1.05)}}
+.wrap{max-width:1260px;margin:0 auto;padding:22px 20px 60px}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:22px 24px;border-radius:22px;border:1px solid rgba(165,180,252,.25);
+background:linear-gradient(120deg,rgba(139,92,246,.22),rgba(16,185,129,.12) 60%,rgba(245,158,11,.10));backdrop-filter:blur(10px);margin-bottom:18px;animation:in .6s both}
+.hero h1{margin:0;font-size:30px;letter-spacing:.2px}.hero .sub{color:var(--mut);font-size:13.5px;margin-top:4px}
+.ver{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+.vpill{font-size:20px;font-weight:800;padding:6px 16px;border-radius:999px;background:linear-gradient(90deg,var(--grok),#6366f1);box-shadow:0 6px 24px rgba(139,92,246,.45)}
+.vmeta{font-size:15px}.vmeta b{color:#fff}.vmeta span{color:var(--mut)}
+.right{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.live{display:flex;align-items:center;gap:10px;background:rgba(9,13,24,.7);border:1px solid var(--line);padding:9px 14px;border-radius:999px;font-size:13.5px;white-space:nowrap}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--bad)}.dot.on{background:var(--ok);animation:p 1.6s infinite}
+@keyframes p{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{box-shadow:0 0 0 11px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.ring{width:26px;height:26px}.ring circle{fill:none;stroke-width:3}.ring .bg{stroke:#263050}.ring .fg{stroke:var(--acc);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .25s linear}
+.fresh{font-size:12.5px;color:var(--mut);text-align:right}.fresh b{color:var(--txt)}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}nav a{font-size:13px;padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--mut);text-decoration:none;transition:.2s}nav a:hover{color:#fff;border-color:var(--acc);transform:translateY(-1px)}
+/* layout */
+.grid{display:grid;gap:16px}.g3{grid-template-columns:1.15fr 1.15fr 1fr}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}.g32{grid-template-columns:2fr 1fr}
+@media(max-width:1000px){.g3,.g2,.g4,.g32,.hero{grid-template-columns:1fr}.right{align-items:flex-start}.fresh{text-align:left}}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 40%),var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;position:relative;overflow:hidden;
+transition:transform .25s,border-color .25s,box-shadow .25s;animation:in .6s ease-out}
+.card:hover{transform:translateY(-3px);border-color:rgba(165,180,252,.45);box-shadow:0 14px 40px rgba(0,0,0,.35)}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card h2{margin:0 0 14px;font-size:13px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
+.card h2 em{font-style:normal;font-size:11.5px;text-transform:none;letter-spacing:0;background:#0d1322;border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+.mt{margin-top:16px}
+/* agents */
+.ag{border-top:3px solid var(--c)}.ag:after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:var(--c);opacity:.08;filter:blur(10px)}
+.ag .top{display:flex;gap:14px;align-items:center}
+.av{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:31px;background:color-mix(in srgb,var(--c) 22%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);transition:transform .3s}
+.ag:hover .av{transform:rotate(-6deg) scale(1.06)}
+.ag .nm{font-size:20px;font-weight:800}.ag .sub{font-size:12.5px;color:var(--mut)}
+.badge{display:inline-flex;align-items:center;gap:7px;margin:14px 0 6px;padding:5px 11px;border-radius:999px;font-size:12.5px;background:#0d1322;border:1px solid var(--line)}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--mut)}.s-active i{background:var(--ok);box-shadow:0 0 8px var(--ok)}.s-waiting i{background:var(--warn);box-shadow:0 0 8px var(--warn)}.s-off i{background:var(--bad)}
+.now{font-size:14.5px;margin:6px 0 12px;font-weight:500}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12.5px;color:var(--mut);margin-bottom:12px;padding:10px 12px;background:#0d1322;border-radius:12px;border:1px solid var(--line)}.kv b{color:var(--txt);font-weight:500;word-break:break-word}
+ul.log{list-style:none;margin:0;padding:0;font-size:13px}ul.log li{display:flex;gap:12px;padding:7px 6px;border-top:1px dashed var(--line);border-radius:8px;transition:background .2s}
+ul.log li:hover{background:rgba(165,180,252,.06)}ul.log .t{color:var(--mut);min-width:80px;font-variant-numeric:tabular-nums;flex-shrink:0}
+/* stats */
+.stat{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;background:linear-gradient(90deg,#fff,var(--acc));-webkit-background-clip:text;color:transparent}.lbl{font-size:12.5px;color:var(--mut)}
+.task{margin-bottom:14px}.task .h{display:flex;justify-content:space-between;font-size:14px;gap:10px}.task .o{color:var(--mut);font-size:12px}
+.bar{height:8px;background:#0d1322;border-radius:9px;overflow:hidden;margin-top:6px}.bar span{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--grok),var(--gpt));transition:width .8s cubic-bezier(.2,.8,.2,1);position:relative}
+.bar span:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:sh 2.2s infinite}@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.done .bar span{background:var(--ok)}.done .bar span:after{display:none}
+/* versions timeline */
+.tl{position:relative;padding-left:22px}.tl:before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:linear-gradient(var(--grok),var(--gpt),transparent)}
+.tl .it{position:relative;margin-bottom:16px}.tl .it:before{content:"";position:absolute;left:-20px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--card);border:2px solid var(--acc)}
+.tl .it.cur:before{background:var(--grok);border-color:#fff;box-shadow:0 0 10px var(--grok)}
+.tl .vh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.tl .vn{font-weight:800}.tl .vt{color:var(--mut);font-size:12px}
+.tl ul{margin:4px 0 0;padding-left:18px;font-size:13px;color:#cdd3f0}
+a{color:var(--acc);text-decoration:none}.links a{display:flex;justify-content:space-between;padding:9px 8px;border-top:1px dashed var(--line);font-size:13.5px;border-radius:8px;transition:.2s}.links a:hover{background:rgba(165,180,252,.08);padding-left:12px}
+footer{margin-top:26px;color:var(--mut);font-size:12px;text-align:center}
+.card.flash{outline:2px solid rgba(139,92,246,0);animation:fl 1.2s}@keyframes fl{from{outline-color:rgba(139,92,246,.8)}to{outline-color:rgba(139,92,246,0)}}
+
+/* live activity */
+.ag{isolation:isolate}
+.ag.busy{border-color:transparent}
+.ag.busy:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:18px;padding:2px;background:conic-gradient(from var(--a),var(--c),transparent 30%,var(--c) 60%,transparent 85%,var(--c));
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 3s linear infinite}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}@keyframes spin{to{--a:360deg}}
+.ag.busy{box-shadow:0 0 34px color-mix(in srgb,var(--c) 35%,transparent)}
+.av{position:relative}.ag.busy .av{animation:bob 1.2s ease-in-out infinite}
+.ag.busy .av:after,.ag.listen .av:after{content:"";position:absolute;inset:-6px;border-radius:22px;border:2px solid var(--c);animation:ripple 1.6s ease-out infinite}
+.ag.listen .av:after{animation-duration:3s;opacity:.6}
+@keyframes ripple{from{transform:scale(.9);opacity:.9}to{transform:scale(1.35);opacity:0}}
+@keyframes bob{50%{transform:translateY(-3px) scale(1.04)}}
+.viz{display:block;width:100%;height:46px;margin:12px 0 2px}
+.act{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}.act b{color:var(--c);font-weight:700;white-space:nowrap}.act span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:10px}
+
+/* lips */
+.lipsbox{position:absolute;top:100px;right:12px;width:110px;height:64px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none}
+.lips{width:86px;height:44px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));transition:filter .3s}
+.speaking .lips{filter:drop-shadow(0 0 12px var(--c))}
+.lipslbl{font-size:10.5px;color:var(--mut);white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}.speaking .lipslbl{color:var(--c);font-weight:700}
+.ag .top{padding-right:116px;min-height:64px}
+
+
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:1000px){.qgrid{grid-template-columns:1fr}}
+.q{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0d1322}.q .qh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}.q .qh b{font-size:15px}.q .qh span{font-size:12px;color:var(--mut)}
+.qr{margin:9px 0}.qr .l{display:flex;justify-content:space-between;font-size:13px}.qr .l b{font-size:15px}.qr .src{font-size:11px;color:var(--mut);margin-top:3px}
+.qbar{height:8px;border-radius:6px;background:#1b2338;margin-top:5px;overflow:hidden}.qbar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#22c55e,#eab308 60%,#ef4444);transition:width .8s}
+
+/* 2.0 faces: eyes, ears, bigger lips */
+.lipsbox{top:92px;right:10px;width:160px;height:150px}
+.ag .top{padding-right:168px;min-height:150px}
+.face{position:relative;width:150px;height:44px;display:flex;justify-content:center;align-items:center}
+.eyes{display:flex;gap:26px}
+.eye{width:26px;height:26px;border-radius:50%;background:#f4f1ea;position:relative;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.4);animation:blink 4.6s infinite;transform-origin:center}
+.eye b{position:absolute;left:7px;top:7px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 2px,#111 3px),var(--c);background:radial-gradient(circle at 35% 35%,#fff 0 1.6px,transparent 2px),radial-gradient(circle,#0b0b0b 0 3px,var(--c) 3.5px);transition:transform .35s}
+.ag:nth-child(2) .eye{animation-delay:1.3s}.ag:nth-child(3) .eye{animation-delay:2.4s}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.ear{position:absolute;top:2px;width:22px;height:40px;transition:transform .45s cubic-bezier(.3,1.6,.5,1),filter .3s}
+.ear svg{width:100%;height:100%}.ear.l{left:2px;transform-origin:right center}.ear.r{right:2px;transform-origin:left center}
+.hear .ear.l{transform:rotate(-14deg) scale(1.22)}.hear .ear.r{transform:rotate(14deg) scale(1.22)}
+.hear .ear svg{animation:earw 2.4s ease-in-out infinite}
+@keyframes earw{0%,100%{transform:rotate(0)}50%{transform:rotate(5deg) scale(1.04)}}
+body.rtalk .hear .ear.l{transform:rotate(-24deg) scale(1.45);filter:drop-shadow(0 0 8px var(--c))}
+body.rtalk .hear .ear.r{transform:rotate(24deg) scale(1.45);filter:drop-shadow(0 0 8px var(--c))}
+body.rtalk .hear .eye b{transform:translate(-2px,3px)} /* смотрит на полосу «Роман» */
+.speaking .eye{animation:none;transform:scaleY(.78)}
+.speaking .ear{transform:none}
+.lips{width:124px;height:62px}
+.lipslbl{max-width:156px;font-size:11px}
+.off .eye{transform:scaleY(.1);animation:none}.off .ear{opacity:.4}
+/* Roman mic equalizer */
+.roman{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;margin:0 0 18px;padding:14px 18px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(56,189,248,.10),rgba(139,92,246,.08)),var(--card);transition:box-shadow .3s,border-color .3s;--c:#38bdf8}
+.roman.talk{border-color:#38bdf8;box-shadow:0 0 30px rgba(56,189,248,.35)}
+.roman .who{display:flex;gap:12px;align-items:center}.roman .rav{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:26px;background:rgba(56,189,248,.18);border:1px solid rgba(56,189,248,.45);position:relative}
+.roman.talk .rav:after{content:"";position:absolute;inset:-6px;border-radius:20px;border:2px solid #38bdf8;animation:ripple 1.2s ease-out infinite}
+.roman .rn{font-weight:800;font-size:17px}.roman .rs{font-size:12.5px;color:var(--mut)}.roman.talk .rs{color:#38bdf8;font-weight:700}
+#eq{width:100%;height:56px;display:block}
+.micbtn{font:inherit;font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid #38bdf8;background:rgba(56,189,248,.12);color:#e0f2fe;cursor:pointer;transition:.2s}.micbtn:hover{background:rgba(56,189,248,.25)}
+.micbtn.on{border-color:var(--line);background:#0d1322;color:var(--mut)}
+@media(max-width:1000px){.roman{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.audio-choose{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:14px 0}.audio-choose select{background:#121829;color:#eef1ff;border:1px solid #39445d;border-radius:7px;padding:7px;font:inherit}.audio-choose label{font-size:12px}.safe-sources{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:10px}.fx-off *{animation:none!important;transition:none!important}.fx-off .speaking .lips{filter:none}.act{gap:8px;flex-wrap:wrap}.act span{white-space:normal;overflow-wrap:anywhere;margin-left:0;flex:1;min-width:120px}.lipslbl{white-space:normal;text-align:center}.q .src{font-size:12px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.task[data-stage="next"] .bar,.task[data-stage="active"] .bar{display:none}
+
+
+.snap-banner{margin:0 0 14px;padding:12px 16px;border-radius:16px;border:1px solid rgba(234,179,8,.45);
+background:linear-gradient(90deg,rgba(234,179,8,.16),rgba(139,92,246,.12));color:#fde68a;font-size:14px;line-height:1.45}
+.snap-banner b{color:#fff}
+.micbtn[disabled]{opacity:.55;cursor:not-allowed}
+.audio-note{color:var(--mut);font-size:13px;margin:8px 0 0}
+@media(max-width:700px){
+  .wrap{padding:12px 12px 48px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:max(48px,env(safe-area-inset-bottom))}
+  .hero{padding:16px;gap:12px;border-radius:18px}
+  .hero h1{font-size:22px;line-height:1.25}
+  .hero .sub{font-size:13px}
+  .vpill{font-size:16px;padding:5px 12px}
+  .vmeta{font-size:13px}
+  .right{align-items:flex-start;width:100%}
+  .fresh{text-align:left}
+  nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:14px;padding-bottom:4px}
+  nav::-webkit-scrollbar{display:none}
+  nav a{flex:0 0 auto;padding:8px 12px;min-height:40px;display:inline-flex;align-items:center}
+  .roman{grid-template-columns:1fr;padding:12px}
+  #eq{height:48px}
+  .lipsbox{position:relative;top:auto;right:auto;width:100%;height:auto;margin:8px 0 10px;pointer-events:none}
+  .face{width:150px;margin:0 auto}
+  .lips{width:124px;height:62px}
+  .ag{padding-bottom:12px}
+  .qgrid,.g3,.g2,.g4,.g32,.hero{grid-template-columns:1fr}
+  .audio-choose{flex-direction:column;align-items:stretch}
+  .micbtn, select{min-height:44px}
+  footer{font-size:12px;padding:0 4px}
+  .snap-banner{font-size:13px}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="snap-banner" role="status">Снимок от 14 ноября 2026, 10:06 (Asia/Jerusalem); живые индикаторы работают только на Mac</div>
+<section class="hero">
+ <div><h1>🛰️ Инфоцентр помощников</h1><div class="sub" id="sub">Мобильный снимок инфоцентра</div>
+  <div class="ver"><span class="vpill" id="vpill">v—</span><span class="vmeta" id="vmeta">загрузка…</span></div></div>
+ <div class="right">
+  <div class="live"><svg class="ring" viewBox="0 0 26 26"><circle class="bg" cx="13" cy="13" r="10"/><circle class="fg" id="ring" cx="13" cy="13" r="10" stroke-dasharray="62.8" stroke-dashoffset="62.8"></circle></svg><span class="dot" id="dot"></span><span id="liveTxt">Снимок, не онлайн</span></div>
+  <div class="fresh" id="fresh"></div>
+ </div>
+</section>
+<section class="roman" id="roman"><div class="who"><div class="rav">🧑</div><div><div class="rn">Роман</div><div class="rs" id="romanState">эквалайзер и микрофон работают только на Mac</div></div></div>
+<canvas id="eq" aria-hidden="true"></canvas>
+<p class="audio-note">Микрофон, захват звука приложений и живые губы на этой странице отключены: это снимок для телефона.</p>
+</section>
+
+<nav>
+  <a href="#agents">Помощники</a>
+  <a href="#quota">Лимиты</a>
+  <a href="#work">Задачи</a>
+  <a href="#res">Результаты</a>
+  <a href="#dec">Решения</a>
+  <a href="#vh">История версий</a>
+  <a href="#cfg">Конфигурация</a>
+  <a href="#lnk">Ссылки</a>
+</nav>
+<section class="grid g3" id="agents"></section>
+<section class="card mt" id="measured-audio">
+  <h2>Звук конкретного помощника</h2>
+  <p class="src" id="compatStatus" role="status">На телефоне нет живого звука. Рты закрыты, потому что это снимок; микрофон, SSE и захват приложений работают только на Mac.</p>
+  <p class="src" id="verifiedStatus"></p>
+  <div id="safeSources" class="safe-sources"></div>
+</section>
+<section class="card mt" id="quota"><h2>📊 Лимиты и подписки <em id="qc"></em></h2><div class="qgrid" id="quotas"></div></section>
+<section class="grid g4 mt" id="stats"></section>
+<section class="grid g2 mt">
+ <div class="card" id="work"><h2>⚙️ В работе <em id="wc"></em></h2><div id="tasks"></div></div>
+ <div class="card" id="res"><h2>✅ Подтверждённые результаты <em id="rc"></em></h2><ul class="log" id="results"></ul></div>
+</section>
+<section class="grid g32 mt">
+ <div class="card" id="vh"><h2>🏷️ История версий <em>с базовой 1.0</em></h2><div class="tl" id="versions"></div></div>
+ <div class="card" id="dec"><h2>🧭 Принятые решения</h2><ul class="log" id="decisions"></ul></div>
+</section>
+<section class="grid g2 mt">
+ <div class="card" id="cfg"><h2>🧩 Версии программ и конфигурация <em>снимок</em></h2><details><summary>Показать технические сведения</summary><div class="kv" id="conf"></div></details></div>
+ <div class="card" id="lnk"><h2>🔗 Ссылки</h2><div class="links" id="links"></div></div>
+</section>
+<footer>Это снимок инфоцентра для телефона. Живые индикаторы, микрофон и звук приложений работают только на Mac. Глаза и уши — художественная реакция интерфейса, не доказательство слушания ИИ.</footer>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const C = {grok:'--grok', chatgpt:'--gpt', claude:'--cl'};
+const COL = {grok:'#8b5cf6', chatgpt:'#10b981', claude:'#f59e0b'};
+function li(a){return (a||[]).map(x=>`<li><span class="t">${esc(x.t)}</span><span>${esc(x.m)}</span></li>`).join('')}
+function drawClosedLips(k){
+  const cy=30, uy=cy, ly=cy, w=0;
+  const up=$('up-'+k), lo=$('lo-'+k), mouth=$('mouth-'+k);
+  if(!up)return;
+  up.setAttribute('d',`M8 ${cy} C 22 ${uy-10}, 40 ${uy-16}, 52 ${uy-9} Q 60 ${uy-5} 68 ${uy-9} C 80 ${uy-16}, 98 ${uy-10}, 112 ${cy} C 96 ${uy+2-w}, 78 ${uy+3}, 60 ${uy+2} C 42 ${uy+3}, 24 ${uy+2-w}, 8 ${cy} Z`);
+  lo.setAttribute('d',`M8 ${cy} C 24 ${ly-2+w}, 42 ${ly-3}, 60 ${ly-2} C 78 ${ly-3}, 96 ${ly-2+w}, 112 ${cy} C 98 ${ly+14}, 78 ${ly+20}, 60 ${ly+20} C 42 ${ly+20}, 22 ${ly+14}, 8 ${cy} Z`);
+  mouth.setAttribute('d',`M12 ${cy} C 30 ${uy}, 90 ${uy}, 108 ${cy} C 90 ${ly}, 30 ${ly}, 12 ${cy} Z`);
+  const te=$('teeth-'+k); if(te) te.setAttribute('opacity',0);
+  const tg=$('tongue-'+k); if(tg) tg.setAttribute('opacity',0);
+  const hl=$('hl-'+k); if(hl) hl.setAttribute('cy', ly+9);
+  const lb=$('lipl-'+k); if(lb) lb.textContent='рот закрыт · снимок, нет живого сигнала';
+}
+function drawIdleEq(){
+  const eq=$('eq'); if(!eq) return;
+  const ratio=Math.max(1, window.devicePixelRatio||1);
+  eq.width=Math.max(40, eq.clientWidth)*ratio; eq.height=56*ratio;
+  const g=eq.getContext('2d'), W=eq.width, H=eq.height, n=48, bw=W/n;
+  g.clearRect(0,0,W,H); g.globalAlpha=.35; g.fillStyle='#38bdf8';
+  for(let i=0;i<n;i++){const h=Math.max(4,H*0.08); g.beginPath();
+    const x=i*bw+bw*0.2,y=(H-h)/2; g.roundRect?g.roundRect(x,y,bw*0.6,h,2):g.rect(x,y,bw*0.6,h); g.fill();}
+}
+function drawIdleViz(k){
+  const el=$('viz-'+k); if(!el) return;
+  el.width=Math.max(40,el.clientWidth)*2; el.height=92;
+  const g=el.getContext('2d'), W=el.width, H=el.height, n=36, bw=W/n;
+  g.clearRect(0,0,W,H);
+  const grad=g.createLinearGradient(0,0,0,H); grad.addColorStop(0,COL[k]); grad.addColorStop(1,COL[k]+'33');
+  g.fillStyle=grad; g.globalAlpha=0.35;
+  for(let i=0;i<n;i++){const h=4; const x=i*bw+bw*0.2,y=(H-h)/2;
+    g.beginPath(); g.roundRect?g.roundRect(x,y,bw*0.6,h,3):g.rect(x,y,bw*0.6,h); g.fill();}
+}
+function render(s){
+  if(!s||!s.data){$('liveTxt').textContent='Ошибка данных: нет снимка';return}
+  const d=s.data||{}, L=s.live||{}, A=d.assistants||{}, V=d.versions||[];
+  if(V[0]) $('vpill').textContent='Версия '+V[0].v;
+  $('agents').innerHTML=['grok','chatgpt','claude'].map((k,i)=>`<div class="card ag" id="card-${k}" style="--c:var(${C[k]});animation-delay:${i*.08}s"><canvas class="viz" id="viz-${k}"></canvas><div class="lipsbox"><div class="face"><div class="ear l"><svg viewBox="0 0 22 40"><g><path d="M20 4 C6 2 1 12 2 20 C3 30 8 38 18 37 C14 32 12 26 14 20 C16 14 20 10 20 4Z" fill="color-mix(in srgb,var(--c) 70%,#f2c6a8)" stroke="rgba(0,0,0,.35)"/><path d="M17 9 C9 9 6 16 7 21 C8 27 11 31 15 32" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2" stroke-linecap="round"/></g></svg></div><div class="eyes"><i class="eye"><b></b></i><i class="eye"><b></b></i></div><div class="ear r"><svg viewBox="0 0 22 40"><g transform="scale(-1,1) translate(-22,0)"><path d="M20 4 C6 2 1 12 2 20 C3 30 8 38 18 37 C14 32 12 26 14 20 C16 14 20 10 20 4Z" fill="color-mix(in srgb,var(--c) 70%,#f2c6a8)" stroke="rgba(0,0,0,.35)"/><path d="M17 9 C9 9 6 16 7 21 C8 27 11 31 15 32" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2" stroke-linecap="round"/></g></svg></div></div><svg class="lips" viewBox="0 0 120 60"><defs><linearGradient id="lg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b8a"/><stop offset="1" stop-color="#c2185b"/></linearGradient>
+<radialGradient id="mg-${k}" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#4a0d1e"/><stop offset="1" stop-color="#14040a"/></radialGradient></defs>
+<path id="mouth-${k}" fill="url(#mg-${k})"/><rect id="teeth-${k}" x="40" width="40" height="5" rx="2.5" fill="#f5f0ea" opacity="0"/><path id="tongue-${k}" fill="#e2557a" opacity="0"/>
+<path id="up-${k}" fill="url(#lg-${k})" stroke="#8e1240" stroke-width="1"/><path id="lo-${k}" fill="url(#lg-${k})" stroke="#8e1240" stroke-width="1"/>
+<ellipse id="hl-${k}" cx="62" rx="13" ry="2.2" fill="#fff" opacity=".35"/></svg><span class="lipslbl" id="lipl-${k}">тишина</span></div><div class="act"><b id="actl-${k}">…</b><span id="actr-${k}"></span></div><div id="ag-${k}"></div></div>`).join('');
+  const lc={grok:[['Источник','Подтверждённая сводка']],chatgpt:[['Источник','Подтверждённая сводка']],claude:[['Роль','Ревьюер по запросу'],['Голос','Источник не подключён']]};
+  const ACT=L.activity||{};
+  ['grok','chatgpt','claude'].forEach(k=>{
+    const a=A[k]||{}, x=ACT[k]||{};
+    const st=a.state||'waiting';
+    $('actl-'+k).textContent='Сводка · живого сигнала нет';
+    $('actr-'+k).textContent=x.reason||'Живые индикаторы работают только на Mac';
+    $('ag-'+k).innerHTML=`<div class="top"><div class="av">${esc(a.emoji)}</div><div><div class="nm">${esc(a.name)}</div><div class="sub">${esc(a.subtitle)}</div></div></div>
+      <div class="badge s-${st}"><i></i>${esc(a.status)}</div><div class="now">▶ ${esc(a.now)}</div>
+      <div class="kv">${lc[k].map(([x,y])=>`<span>${x}</span><b>${esc(y)}</b>`).join('')}</div>
+      <ul class="log">${li((a.log||[]).slice(0,6))}</ul>`;
+    drawClosedLips(k); drawIdleViz(k);
+  });
+  const T=d.tasks||[];
+  const stats=[[T.filter(t=>t.stage?t.stage==='active':t.progress<100).length,'','задач в работе'],
+    [(d.results||[]).length,'','подтверждённых результатов'],
+    [(d.decisions||[]).length,'','принятых решений'],
+    [V[0]?V[0].v:'—','','версия снимка']];
+  $('stats').innerHTML=stats.map((x,i)=>`<div class="card" style="animation-delay:${.2+i*.06}s"><div class="stat" id="st${i}">${esc(x[0])}${esc(x[1])}</div><div class="lbl">${x[2]}</div></div>`).join('');
+  $('wc').textContent=T.filter(t=>t.stage?t.stage==='active':(t.progress||0)<100).length+' в работе · '+T.filter(t=>t.stage==='done'||t.progress>=100).length+' готово · '+T.filter(t=>t.stage==='next').length+' дальше';
+  $('rc').textContent=(d.results||[]).length;
+  $('tasks').innerHTML=T.map(t=>`<div data-stage="${esc(t.stage||'legacy')}" class="task ${t.progress>=100||t.stage==='done'?'done':''}"><div class="h"><span>${esc(t.title)}</span><b>${t.stage==='next'?'→ дальше':t.stage==='active'?'в работе':(t.progress>=100||t.stage==='done')?'✓ готово':(t.progress||0)+'%'}</b></div><div class="o">${esc(t.owner||'')}</div>${t.details?`<div class="o">${esc(t.details)}</div>`:''}<div class="bar"><span style="width:${t.progress||0}%"></span></div></div>`).join('');
+  $('results').innerHTML=li(d.results);
+  $('decisions').innerHTML=li(d.decisions);
+  $('versions').innerHTML=V.map((v,i)=>`<div class="it ${i?'':'cur'}"><div class="vh"><span class="vn">v${esc(v.v)}</span><span>${esc(v.title)}</span><span class="vt">${v.at?new Date(v.at).toLocaleString('ru-RU',{timeZone:'Asia/Jerusalem',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}${i?'':' · текущая'}</span></div><ul>${(v.changes||[]).map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>`).join('');
+  const Q=d.quotas||[]; $('qc').textContent=d.quotas_checked?('проверено '+d.quotas_checked):'';
+  $('quotas').innerHTML=Q.map(q=>`<div class="q"><div class="qh"><b>${esc(q.name)}</b><span>${esc(q.plan)}</span></div>${(q.rows||[]).map(r=>`<div class="qr"><div class="l"><span>${esc(r.label)}</span><b>${esc(r.value)}</b></div>${r.pct!=null?`<div class="qbar"><span style="width:${Math.max(0,Math.min(100,r.pct))}%"></span></div>`:''}${r.reset?`<div class="src">⟳ ${esc(r.reset)}</div>`:''}<div class="src">Источник: ${esc(r.source)}</div></div>`).join('')}</div>`).join('');
+  const cfg=(L.chatgpt&&L.chatgpt.config)||{};
+  const conf=[['Инфоцентр',V[0]?'v'+V[0].v:'—'],['Тип страницы','статический снимок для телефона'],['macOS',L.system&&L.system.macos],['Claude Code',L.claude&&L.claude.version],['Модель Codex',cfg.model]];
+  $('conf').innerHTML=conf.map(([a,b])=>`<span>${a}</span><b>${esc(b||'—')}</b>`).join('');
+  $('links').innerHTML=(d.links||[]).map(l=>`<a href="${esc(l.url)}" target="_blank" rel="noopener"><span>${esc(l.label)}</span><span>↗</span></a>`).join('');
+  $('sub').textContent='Мобильный снимок инфоцентра · '+ (s.snapshot_label||s.generated_at||'');
+  $('vmeta').innerHTML=`<b>снимок</b> <span>· ${esc(s.snapshot_label||'')}</span>`;
+  $('fresh').innerHTML=`Снимок: <b>${esc(s.snapshot_label||'')}</b> · живые проверки только на Mac`;
+  $('verifiedStatus').textContent=s.summary_updated_at
+    ? 'Подтверждённые сводки и квота входят в этот снимок.'
+    : 'В снимке нет отдельной подтверждённой сводки.';
+  if(s.sources&&s.sources.length){
+    $('safeSources').textContent=s.sources.map(x=>x.name+': '+(x.ok?'получено':'недоступен')).join(' · ');
+  }
+  drawIdleEq();
+}
+fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(render).catch(e=>{
+  $('liveTxt').textContent='Не удалось загрузить снимок';
+  $('sub').textContent='Ошибка загрузки data.json: '+e.message;
+});
+addEventListener('resize',()=>{drawIdleEq();['grok','chatgpt','claude'].forEach(drawIdleViz);});
+</script>
+</body>
+</html>
